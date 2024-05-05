@@ -226,3 +226,40 @@ export function markAccountRead(accountId) {
     accountId: accountId,
   };
 }
+
+export function importBpTransactions(accountId, dateFrom, dateTo, xref, skey) {
+  return async dispatch => {
+    debugger;
+    let {
+      errors = [],
+      added,
+      updated,
+    } = await send('transactions-pb-import', {
+      accountId,
+      dateFrom,
+      dateTo,
+      xref,
+      skey,
+    });
+    debugger;
+
+    errors.forEach(error => {
+      dispatch(
+        addNotification({
+          type: 'error',
+          message: error.message,
+          internal: error.internal,
+        }),
+      );
+    });
+
+    dispatch({
+      type: constants.SET_NEW_TRANSACTIONS,
+      newTransactions: added,
+      matchedTransactions: updated,
+      updatedAccounts: added.length > 0 ? [accountId] : [],
+    });
+
+    return added.length > 0 || updated.length > 0;
+  };
+}

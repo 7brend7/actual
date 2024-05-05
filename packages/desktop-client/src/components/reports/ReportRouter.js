@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import ByCategories from './ByCategories';
 import CashFlow from './CashFlow';
 import NetWorth from './NetWorth';
 import Overview from './Overview';
@@ -11,6 +12,7 @@ export function ReportRouter() {
       <Route path="/" element={<Overview />} />
       <Route path="/net-worth" element={<NetWorth />} />
       <Route path="/cash-flow" element={<CashFlow />} />
+      <Route path="/by-categories" element={<ByCategories />} />
     </Routes>
   );
 }
