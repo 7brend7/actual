@@ -406,6 +406,25 @@ class AccountInternal extends PureComponent {
     }
   };
 
+  onPbImport = async data => {
+    const {
+      update: [dateFrom, dateTo],
+      xref,
+      skey,
+    } = data;
+    if (dateFrom && dateTo) {
+      const accountId = this.props.accountId;
+      debugger;
+      await this.props.importBpTransactions(
+        accountId,
+        dateFrom,
+        dateTo,
+        xref,
+        skey,
+      );
+    }
+  };
+
   onExport = async accountName => {
     let exportedTransactions = await send('transactions-export-query', {
       query: this.currentQuery.serialize(),
@@ -1021,6 +1040,7 @@ class AccountInternal extends PureComponent {
                   }
                   onSync={this.onSync}
                   onImport={this.onImport}
+                  onPbImport={this.onPbImport}
                   onBatchDelete={this.onBatchDelete}
                   onBatchDuplicate={this.onBatchDuplicate}
                   onBatchEdit={this.onBatchEdit}

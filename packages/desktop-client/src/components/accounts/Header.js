@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
+import DatePicker from 'react-datepicker';
 
+import 'react-datepicker/dist/react-datepicker.css';
+import './Account.css';
 import useSyncServerStatus from '../../hooks/useSyncServerStatus';
 import Loading from '../../icons/AnimatedLoading';
 import Add from '../../icons/v1/Add';
@@ -79,6 +82,7 @@ export function AccountHeader({
   onCondOpChange,
   onDeleteFilter,
   onScheduleAction,
+  onPbImport,
 }) {
   let [menuOpen, setMenuOpen] = useState(false);
   let searchInput = useRef(null);
@@ -102,6 +106,11 @@ export function AccountHeader({
       });
     }
   }
+
+  let [xref, setXref] = useState('');
+  let [skey, setSkey] = useState('');
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [startDate, endDate] = dateRange;
 
   return (
     <>
@@ -204,31 +213,58 @@ export function AccountHeader({
           style={{ marginTop: 12 }}
         >
           {((account && !account.closed) || canSync) && (
-            <Button bare onClick={canSync ? onSync : onImport}>
-              {canSync ? (
-                <>
-                  <AnimatedRefresh
-                    width={13}
-                    height={13}
-                    animating={
-                      (account && accountsSyncing === account.name) ||
-                      accountsSyncing === '__all'
-                    }
-                    style={{ color: 'currentColor', marginRight: 4 }}
-                  />{' '}
-                  Sync
-                </>
-              ) : (
-                <>
-                  <DownloadThickBottom
-                    width={13}
-                    height={13}
-                    style={{ color: 'currentColor', marginRight: 4 }}
-                  />{' '}
-                  Import
-                </>
-              )}
-            </Button>
+            <>
+              <Button bare onClick={canSync ? onSync : onImport}>
+                {canSync ? (
+                  <>
+                    <AnimatedRefresh
+                      width={13}
+                      height={13}
+                      animating={
+                        (account && accountsSyncing === account.name) ||
+                        accountsSyncing === '__all'
+                      }
+                      style={{ color: 'currentColor', marginRight: 4 }}
+                    />{' '}
+                    Sync
+                  </>
+                ) : (
+                  <>
+                    <DownloadThickBottom
+                      width={13}
+                      height={13}
+                      style={{ color: 'currentColor', marginRight: 4 }}
+                    />{' '}
+                    Import
+                  </>
+                )}
+              </Button>
+              <DatePicker
+                popperClassName="pb-popper"
+                startDate={startDate}
+                endDate={endDate}
+                onChange={update => {
+                  setDateRange(update);
+                  onPbImport({
+                    update,
+                    xref,
+                    skey,
+                  });
+                }}
+                selectsRange
+              >
+                <input
+                  placeholder="xref"
+                  value={xref}
+                  onChange={e => setXref(e.target.value)}
+                />
+                <input
+                  placeholder="skey"
+                  value={skey}
+                  onChange={e => setSkey(e.target.value)}
+                />
+              </DatePicker>
+            </>
           )}
           {!showEmptyMessage && (
             <Button bare onClick={onAddTransaction}>

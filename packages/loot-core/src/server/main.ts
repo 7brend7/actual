@@ -1383,6 +1383,49 @@ handlers['transactions-import'] = mutator(function ({
   });
 });
 
+handlers['transactions-pb-import'] = mutator(function ({
+  accountId,
+  dateFrom,
+  dateTo,
+  xref,
+  skey,
+}) {
+  return withUndo(async () => {
+    if (typeof accountId !== 'string') {
+      throw APIError('transactions-import: accountId must be an id');
+    }
+
+    try {
+      debugger;
+      const response = await get(
+        getServer().PB_SYNC +
+          '/get-transactions?' +
+          new URLSearchParams({
+            dateFrom: monthUtils.format(dateFrom, 'dd.MM.yyyy'),
+            dateTo: monthUtils.format(dateTo, 'dd.MM.yyyy'),
+            xref,
+            skey,
+          }),
+      );
+      const transactions = JSON.parse(response);
+      if (transactions.status === 'ok') {
+        return await bankSync.reconcileTransactions(
+          accountId,
+          transactions.data,
+        );
+      } else if (transactions.status === 'error') {
+        throw new TransactionError(transactions.data.message);
+      }
+    } catch (err) {
+      if (err instanceof TransactionError) {
+        return { errors: [{ message: err.message }], added: [], updated: [] };
+      }
+
+      throw err;
+    }
+  });
+});
+
 handlers['account-unlink'] = mutator(async function ({ id }) {
   let { bank: bankId } = await db.first(
     'SELECT bank FROM accounts WHERE id = ?',

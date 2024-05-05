@@ -246,6 +246,18 @@ function Overview({ accounts }) {
         }}
       >
         <Card
+          to="/reports/by-categories"
+          style={[
+            {
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: 200,
+            },
+          ]}
+        >
+          View pie with categories
+        </Card>
+        <Card
           style={[
             {
               color: '#a0a0a0',
