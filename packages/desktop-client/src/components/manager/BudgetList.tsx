@@ -7,16 +7,23 @@ import React, {
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { Button } from '@actual-app/components/button';
+import { Menu } from '@actual-app/components/menu';
+import { Popover } from '@actual-app/components/popover';
+import { styles } from '@actual-app/components/styles';
+import { Text } from '@actual-app/components/text';
+import { Tooltip } from '@actual-app/components/tooltip';
+import { View } from '@actual-app/components/view';
+
+import { getUserData, pushModal } from 'loot-core/client/actions';
 import {
   closeAndDownloadBudget,
   closeAndLoadBudget,
   createBudget,
   downloadBudget,
-  getUserData,
   loadAllFiles,
   loadBudget,
-  pushModal,
-} from 'loot-core/client/actions';
+} from 'loot-core/client/budgets/budgetsSlice';
 import {
   isElectron,
   isNonProductionEnvironment,
@@ -43,14 +50,8 @@ import {
 } from '../../icons/v1';
 import { SvgCloudUnknown, SvgKey, SvgRefreshArrow } from '../../icons/v2';
 import { useSelector, useDispatch } from '../../redux';
-import { styles, theme } from '../../style';
+import { theme } from '../../style';
 import { tokens } from '../../tokens';
-import { Button } from '../common/Button2';
-import { Menu } from '../common/Menu';
-import { Popover } from '../common/Popover';
-import { Text } from '../common/Text';
-import { Tooltip } from '../common/Tooltip';
-import { View } from '../common/View';
 import { useResponsive } from '../responsive/ResponsiveProvider';
 import { useMultiuserEnabled } from '../ServerContext';
 
@@ -559,14 +560,14 @@ export function BudgetList({ showHeader = true, quickSwitchMode = false }) {
 
     if (!id) {
       if (isRemoteFile) {
-        await dispatch(downloadBudget(file.cloudFileId));
+        await dispatch(downloadBudget({ cloudFileId: file.cloudFileId }));
       } else {
-        await dispatch(loadBudget(file.id));
+        await dispatch(loadBudget({ id: file.id }));
       }
     } else if (!isRemoteFile && file.id !== id) {
-      await dispatch(closeAndLoadBudget(file.id));
+      await dispatch(closeAndLoadBudget({ fileId: file.id }));
     } else if (isRemoteFile) {
-      await dispatch(closeAndDownloadBudget(file.cloudFileId));
+      await dispatch(closeAndDownloadBudget({ cloudFileId: file.cloudFileId }));
     }
   };
 

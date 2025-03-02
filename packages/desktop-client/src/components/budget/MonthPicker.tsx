@@ -2,13 +2,15 @@
 import React, { type CSSProperties, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { styles } from '@actual-app/components/styles';
+import { View } from '@actual-app/components/view';
+
 import * as monthUtils from 'loot-core/shared/months';
 
 import { useResizeObserver } from '../../hooks/useResizeObserver';
 import { SvgCalendar } from '../../icons/v2';
-import { styles, theme } from '../../style';
+import { theme } from '../../style';
 import { Link } from '../common/Link';
-import { View } from '../common/View';
 
 import { type MonthBounds } from './MonthsContext';
 
@@ -126,6 +128,7 @@ export const MonthPicker = ({
             <View
               key={month}
               style={{
+                alignItems: 'center',
                 padding: '3px 3px',
                 width: size === 'big' ? '35px' : '20px',
                 textAlign: 'center',
@@ -186,23 +189,25 @@ export const MonthPicker = ({
               onMouseEnter={() => setHoverId(idx)}
               onMouseLeave={() => setHoverId(null)}
             >
-              {size === 'small' ? monthName[0] : monthName}
-              {showYearHeader && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: -14,
-                    left: 0,
-                    fontSize: 10,
-                    fontWeight: 'bold',
-                    color: isMonthBudgeted
-                      ? theme.pageText
-                      : theme.pageTextSubdued,
-                  }}
-                >
-                  {year}
-                </View>
-              )}
+              <View>
+                {size === 'small' ? monthName[0] : monthName}
+                {showYearHeader && (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: -16,
+                      left: 0,
+                      fontSize: 10,
+                      fontWeight: 'bold',
+                      color: isMonthBudgeted
+                        ? theme.pageText
+                        : theme.pageTextSubdued,
+                    }}
+                  >
+                    {year}
+                  </View>
+                )}
+              </View>
             </View>
           );
         })}

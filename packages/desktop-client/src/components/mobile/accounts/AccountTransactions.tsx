@@ -5,6 +5,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { Button } from '@actual-app/components/button';
+import { styles } from '@actual-app/components/styles';
+import { Text } from '@actual-app/components/text';
+import { View } from '@actual-app/components/view';
 
 import {
   collapseModals,
@@ -39,10 +45,7 @@ import { useDateFormat } from '../../../hooks/useDateFormat';
 import { useFailedAccounts } from '../../../hooks/useFailedAccounts';
 import { useNavigate } from '../../../hooks/useNavigate';
 import { useSelector, useDispatch } from '../../../redux';
-import { styles, theme } from '../../../style';
-import { Button } from '../../common/Button2';
-import { Text } from '../../common/Text';
-import { View } from '../../common/View';
+import { theme } from '../../../style';
 import { MobilePageHeader, Page } from '../../Page';
 import { MobileBackButton } from '../MobileBackButton';
 import { AddTransactionButton } from '../transactions/AddTransactionButton';
@@ -228,9 +231,10 @@ function TransactionListWithPreviews({
     | 'uncategorized';
   readonly accountName: AccountEntity['name'] | string;
 }) {
+  const { t } = useTranslation();
   const baseTransactionsQuery = useCallback(
     () =>
-      queries.transactions(accountId).options({ splits: 'none' }).select('*'),
+      queries.transactions(accountId).options({ splits: 'all' }).select('*'),
     [accountId],
   );
 
@@ -326,7 +330,8 @@ function TransactionListWithPreviews({
   );
 
   const transactionsToDisplay = !isSearching
-    ? previewTransactions.concat(transactions)
+    ? // Do not render child transactions in the list, unless searching
+      previewTransactions.concat(transactions.filter(t => !t.is_child))
     : transactions;
 
   return (
@@ -338,7 +343,7 @@ function TransactionListWithPreviews({
       balanceUncleared={balanceQueries.uncleared}
       isLoadingMore={isLoadingMore}
       onLoadMore={loadMoreTransactions}
-      searchPlaceholder={`Search ${accountName}`}
+      searchPlaceholder={t('Search {{accountName}}', { accountName })}
       onSearch={onSearch}
       onOpenTransaction={onOpenTransaction}
       onRefresh={onRefresh}

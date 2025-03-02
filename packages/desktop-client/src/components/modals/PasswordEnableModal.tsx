@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { closeBudget, popModal } from 'loot-core/client/actions';
+import { Button } from '@actual-app/components/button';
+import { Label } from '@actual-app/components/label';
+import { styles } from '@actual-app/components/styles';
+import { View } from '@actual-app/components/view';
+
+import { popModal } from 'loot-core/client/actions';
+import { closeBudget } from 'loot-core/client/budgets/budgetsSlice';
 import { send } from 'loot-core/platform/client/fetch';
 import * as asyncStorage from 'loot-core/platform/server/asyncStorage';
 
 import { useDispatch } from '../../redux';
-import { theme, styles } from '../../style';
+import { theme } from '../../style';
 import { Error as ErrorAlert } from '../alerts';
-import { Button } from '../common/Button2';
-import { Label } from '../common/Label';
 import { Modal, ModalCloseButton, ModalHeader } from '../common/Modal';
-import { View } from '../common/View';
 import { FormField } from '../forms';
 import {
   ConfirmOldPasswordForm,

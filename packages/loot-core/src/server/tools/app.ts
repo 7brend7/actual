@@ -1,10 +1,10 @@
 // @ts-strict-ignore
 import { q } from '../../shared/query';
-import { batchUpdateTransactions } from '../accounts/transactions';
 import { createApp } from '../app';
 import { runQuery } from '../aql';
 import * as db from '../db';
 import { runMutator } from '../mutators';
+import { batchUpdateTransactions } from '../transactions';
 
 import { ToolsHandlers } from './types/handlers';
 
@@ -52,7 +52,7 @@ app.method('tools/fix-split-transactions', async () => {
   `);
 
   await runMutator(async () => {
-    const updated = deletedRows.map(row => ({ id: row.id, tombstone: 1 }));
+    const updated = deletedRows.map(row => ({ id: row.id, tombstone: true }));
     await batchUpdateTransactions({ updated });
   });
 
@@ -92,11 +92,22 @@ app.method('tools/fix-split-transactions', async () => {
     await batchUpdateTransactions({ updated });
   });
 
+  // 6. Remove transaction errors from non-parent transactions
+  const errorRows = await db.all(`
+    SELECT id FROM v_transactions_internal WHERE error IS NOT NULL AND is_parent = 0
+  `);
+
+  await runMutator(async () => {
+    const updated = errorRows.map(({ id }) => ({ id, error: null }));
+    await batchUpdateTransactions({ updated });
+  });
+
   return {
     numBlankPayees: blankPayeeRows.length,
     numCleared: clearedRows.length,
     numDeleted: deletedRows.length,
     numTransfersFixed: brokenTransfers.length,
+    numNonParentErrorsFixed: errorRows.length,
     mismatchedSplits,
   };
 });

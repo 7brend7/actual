@@ -12,6 +12,7 @@ env:
   IMAGES: |
     actualbudget/actual-server
     ghcr.io/actualbudget/actual-server
+    ghcr.io/actualbudget/actual
 
   # Creates the following tags:
   # - actual-server:edge
@@ -21,6 +22,7 @@ env:
 
 jobs:
   build:
+    if: ${{ github.event.repository.fork == false }}
     name: Build Docker image
     runs-on: ubuntu-latest
     strategy:

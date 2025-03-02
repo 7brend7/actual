@@ -1,5 +1,6 @@
 // @ts-strict-ignore
 import { getClock, deserializeClock } from '@actual-app/crdt';
+import { v4 as uuidv4 } from 'uuid';
 
 import { expectSnapshotWithDiffer } from '../mocks/util';
 import * as connection from '../platform/server/connection';
@@ -67,7 +68,9 @@ describe('Budgets', () => {
 
     // Grab the clock to compare later
     await db.openDatabase('test-budget');
-    const row = await db.first('SELECT * FROM messages_clock');
+    const row = await db.first<db.DbClockMessage>(
+      'SELECT * FROM messages_clock',
+    );
 
     const { error } = await runHandler(handlers['load-budget'], {
       id: 'test-budget',
@@ -175,6 +178,7 @@ describe('Budget', () => {
     // budgets for the earlier months
     await db.runQuery("INSERT INTO accounts (id, name) VALUES ('one', 'boa')");
     await runHandler(handlers['transaction-add'], {
+      id: uuidv4(),
       date: '2016-05-06',
       amount: 50,
       account: 'one',

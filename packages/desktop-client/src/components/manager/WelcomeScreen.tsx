@@ -1,15 +1,18 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { createBudget, pushModal } from 'loot-core/client/actions';
+import { Button } from '@actual-app/components/button';
+import { Paragraph } from '@actual-app/components/paragraph';
+import { styles } from '@actual-app/components/styles';
+import { Text } from '@actual-app/components/text';
+import { View } from '@actual-app/components/view';
+
+import { pushModal } from 'loot-core/client/actions';
+import { createBudget } from 'loot-core/client/budgets/budgetsSlice';
 
 import { useDispatch } from '../../redux';
-import { styles, theme } from '../../style';
-import { Button } from '../common/Button2';
+import { theme } from '../../style';
 import { Link } from '../common/Link';
-import { Paragraph } from '../common/Paragraph';
-import { Text } from '../common/Text';
-import { View } from '../common/View';
 
 export function WelcomeScreen() {
   const { t } = useTranslation();
@@ -95,7 +98,7 @@ export function WelcomeScreen() {
           <Button
             variant="primary"
             autoFocus
-            onPress={() => dispatch(createBudget())}
+            onPress={() => dispatch(createBudget({}))}
           >
             {t('Start fresh')}
           </Button>

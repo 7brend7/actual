@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
+import { ButtonWithLoading } from '@actual-app/components/button';
+import { Paragraph } from '@actual-app/components/paragraph';
+import { Text } from '@actual-app/components/text';
+import { View } from '@actual-app/components/view';
+
 import { send } from 'loot-core/platform/client/fetch';
 import { type Handlers } from 'loot-core/types/handlers';
 
 import { theme } from '../../style';
-import { ButtonWithLoading } from '../common/Button2';
-import { Paragraph } from '../common/Paragraph';
-import { Text } from '../common/Text';
-import { View } from '../common/View';
 
 import { Setting } from './UI';
 
@@ -24,6 +25,7 @@ function useRenderResults() {
       numDeleted,
       numTransfersFixed,
       mismatchedSplits,
+      numNonParentErrorsFixed,
     } = results;
     const result: string[] = [];
 
@@ -32,6 +34,7 @@ function useRenderResults() {
       numCleared === 0 &&
       numDeleted === 0 &&
       numTransfersFixed === 0 &&
+      numNonParentErrorsFixed === 0 &&
       mismatchedSplits.length === 0
     ) {
       result.push(t('No split transactions found needing repair.'));
@@ -54,6 +57,13 @@ function useRenderResults() {
         result.push(
           t('Fixed {{count}} splits that weren’t properly deleted.', {
             count: numDeleted,
+          }),
+        );
+      }
+      if (numNonParentErrorsFixed > 0) {
+        result.push(
+          t('Fixed {{count}} non-split transactions with split errors.', {
+            count: numNonParentErrorsFixed,
           }),
         );
       }
@@ -152,6 +162,10 @@ export function RepairTransactions() {
             Checks that the sum of all child transactions adds up to the total
             amount. If not, these will be flagged below to allow you to easily
             locate and fix the amounts.
+          </li>
+          <li>
+            Checks for any non-split transactions with erroneous split errors
+            and removes the errors if found.
           </li>
           <li>
             Check if you have any budget transfers that erroneous contain a
